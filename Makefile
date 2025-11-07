@@ -1,4 +1,4 @@
-.PHONY: help build run test clean migrate seed docker-up docker-down docker-logs docker-reset docker-dev docker-dev-logs docker-dev-down docker-dev-reset install-deps
+.PHONY: help build run test clean migrate seed docker-up docker-down docker-logs docker-reset docker-dev docker-dev-logs docker-dev-down docker-dev-reset install-deps swagger-gen swagger-validate
 
 # Variables
 APP_NAME=go-fiber-boilerplate
@@ -71,6 +71,15 @@ migrate-status: ## Show migration status
 seed: ## Seed database with sample data
 	@echo "Seeding database..."
 	@go run $(MAIN_PATH) -seed
+
+swagger-gen: ## Generate Swagger documentation (requires swag installed)
+	@echo "Generating Swagger documentation..."
+	@swag init -g $(MAIN_PATH) || echo "swag not installed. Install with: go install github.com/swaggo/swag/cmd/swag@latest"
+	@echo "Swagger documentation generated in ./docs/"
+
+swagger-validate: ## Validate Swagger spec (requires swag installed)
+	@echo "Validating Swagger spec..."
+	@swag validate -g $(MAIN_PATH) || echo "swag not installed. Install with: go install github.com/swaggo/swag/cmd/swag@latest"
 
 docker-build: ## Build Docker image
 	@echo "Building Docker image..."

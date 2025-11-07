@@ -42,7 +42,6 @@ func Migrate(db *gorm.DB, cfg *config.Config) error {
 		// Use AutoMigrate for fast development iteration
 		log.Println("Using AutoMigrate for development mode")
 		if err := db.AutoMigrate(
-			&models.User{},
 			&models.Book{},
 		); err != nil {
 			log.Fatalf("Failed to run migrations: %v", err)

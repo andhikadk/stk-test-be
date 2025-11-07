@@ -9,6 +9,9 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Get("/health", handlers.HealthCheck)
 
+	app.Get("/swagger/doc.json", handlers.SwaggerJSON)
+	app.Get("/swagger/index.html", handlers.SwaggerUI)
+
 	apiGroup := app.Group("/api")
 	{
 		booksGroup := apiGroup.Group("/books")
