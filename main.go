@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	_ "go-fiber-boilerplate/docs"
+
 	"go-fiber-boilerplate/config"
 	"go-fiber-boilerplate/internal/database"
 	"go-fiber-boilerplate/internal/middleware"
@@ -18,6 +20,21 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"gorm.io/gorm"
 )
+
+// @title           STK Test API - Menu Management
+// @version         1.0
+// @description     REST API for hierarchical menu management with reordering and moving capabilities
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.email  support@example.com
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:4000
+// @BasePath  /
+// @schemes   http https
 
 func main() {
 	migrateCmd := flag.String("migrate", "", "Run migrations (use: -migrate or -migrate sql)")

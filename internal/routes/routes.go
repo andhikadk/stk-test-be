@@ -4,24 +4,25 @@ import (
 	"go-fiber-boilerplate/internal/handlers"
 
 	"github.com/gofiber/fiber/v2"
+	fiberSwagger "github.com/gofiber/swagger"
 )
 
 func SetupRoutes(app *fiber.App) {
 	app.Get("/health", handlers.HealthCheck)
 
-	app.Get("/swagger/doc.json", handlers.SwaggerJSON)
-	app.Get("/swagger/index.html", handlers.SwaggerUI)
+	app.Get("/swagger/*", fiberSwagger.HandlerDefault)
 
 	apiGroup := app.Group("/api")
 	{
-		booksGroup := apiGroup.Group("/books")
+		menusGroup := apiGroup.Group("/menus")
 		{
-			booksGroup.Get("/", handlers.GetBooks)
-			booksGroup.Get("/search", handlers.SearchBooks)
-			booksGroup.Get("/:id", handlers.GetBook)
-			booksGroup.Post("/", handlers.CreateBook)
-			booksGroup.Put("/:id", handlers.UpdateBook)
-			booksGroup.Delete("/:id", handlers.DeleteBook)
+			menusGroup.Get("/", handlers.GetMenus)
+			menusGroup.Get("/:id", handlers.GetMenu)
+			menusGroup.Post("/", handlers.CreateMenu)
+			menusGroup.Put("/:id", handlers.UpdateMenu)
+			menusGroup.Delete("/:id", handlers.DeleteMenu)
+			menusGroup.Patch("/:id/move", handlers.MoveMenu)
+			menusGroup.Patch("/:id/reorder", handlers.ReorderMenu)
 		}
 	}
 

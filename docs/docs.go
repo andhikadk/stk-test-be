@@ -4,99 +4,88 @@ package docs
 import "github.com/swaggo/swag"
 
 const docTemplate = `{
+    "schemes": {{ marshal .Schemes }},
     "swagger": "2.0",
     "info": {
-        "title": "Go Fiber Boilerplate API",
-        "description": "A production-ready REST API boilerplate built with Fiber, GORM, and PostgreSQL",
+        "description": "{{escape .Description}}",
+        "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "email": "support@example.com"
         },
-        "version": "1.0.0"
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "{{.Version}}"
     },
-    "host": "localhost:4000",
-    "basePath": "/",
+    "host": "{{.Host}}",
+    "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
+        "/api/menus": {
             "get": {
-                "description": "Check API health status",
-                "tags": [
-                    "Health"
+                "description": "Get all menu items in hierarchical tree structure",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Health Check",
-                "operationId": "health",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Get all menu items",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/books": {
-            "get": {
-                "description": "Get all books with optional search and pagination",
-                "tags": [
-                    "Books"
-                ],
-                "summary": "Get all books",
-                "operationId": "getBooks",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Search keyword",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Book"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Menu"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Create a new book",
-                "tags": [
-                    "Books"
+                "description": "Create a new menu item",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Create a book",
-                "operationId": "createBook",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Create new menu item",
                 "parameters": [
                     {
-                        "description": "Book object",
-                        "name": "book",
+                        "description": "Menu object",
+                        "name": "menu",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "$ref": "#/definitions/models.Menu"
                         }
                     }
                 ],
@@ -104,30 +93,53 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Menu"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Invalid request"
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     }
                 }
             }
         },
-        "/api/books/{id}": {
+        "/api/menus/{id}": {
             "get": {
-                "description": "Get a book by ID",
-                "tags": [
-                    "Books"
+                "description": "Get a single menu item by ID",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Get a book",
-                "operationId": "getBook",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Get single menu item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Book ID",
+                        "description": "Menu ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -137,39 +149,62 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Menu"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
                         }
                     },
                     "404": {
-                        "description": "Book not found"
-                    },
-                    "500": {
-                        "description": "Internal server error"
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     }
                 }
             },
             "put": {
-                "description": "Update a book",
-                "tags": [
-                    "Books"
+                "description": "Update a menu item",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Update a book",
-                "operationId": "updateBook",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Update menu item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Book ID",
+                        "description": "Menu ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Book object",
-                        "name": "book",
+                        "description": "Menu object",
+                        "name": "menu",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "$ref": "#/definitions/models.Menu"
                         }
                     }
                 ],
@@ -177,31 +212,51 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Book"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Menu"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Invalid request"
-                    },
-                    "404": {
-                        "description": "Book not found"
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     }
                 }
             },
             "delete": {
-                "description": "Delete a book",
-                "tags": [
-                    "Books"
+                "description": "Delete a menu item and its children",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Delete a book",
-                "operationId": "deleteBook",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Delete menu item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Book ID",
+                        "description": "Menu ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -209,152 +264,255 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Book deleted successfully",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MessageResponse"
+                            "$ref": "#/definitions/models.APIResponse"
                         }
                     },
-                    "404": {
-                        "description": "Book not found"
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     }
                 }
             }
         },
-        "/api/books/search": {
-            "get": {
-                "description": "Search books by title, author, or ISBN",
-                "tags": [
-                    "Books"
+        "/api/menus/{id}/move": {
+            "patch": {
+                "description": "Move a menu item to a different parent",
+                "consumes": [
+                    "application/json"
                 ],
-                "summary": "Search books",
-                "operationId": "searchBooks",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Move menu item to different parent",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Search keyword (title, author, or ISBN)",
-                        "name": "q",
-                        "in": "query",
+                        "type": "integer",
+                        "description": "Menu ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Move request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Book"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Menu"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Missing search query"
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/menus/{id}/reorder": {
+            "patch": {
+                "description": "Change the order index of a menu item",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menus"
+                ],
+                "summary": "Reorder menu item within same level",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Menu ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Reorder request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Menu"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Check API health status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health Check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
-        "models.Book": {
+        "models.APIResponse": {
             "type": "object",
             "properties": {
-                "author": {
-                    "description": "Author name",
+                "data": {},
+                "error": {
                     "type": "string",
-                    "example": "John Doe"
+                    "example": ""
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Success"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
+                }
+            }
+        },
+        "models.Menu": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Menu"
+                    }
                 },
                 "created_at": {
-                    "type": "string",
-                    "format": "date-time"
+                    "type": "string"
                 },
-                "description": {
-                    "description": "Book description",
+                "icon": {
                     "type": "string",
-                    "example": "A great book about Go programming"
+                    "example": "icon-dashboard"
                 },
                 "id": {
-                    "description": "Book ID",
                     "type": "integer",
                     "example": 1
                 },
-                "isbn": {
-                    "description": "ISBN (unique)",
-                    "type": "string",
-                    "example": "978-3-16-148410-0"
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
                 },
-                "pages": {
-                    "description": "Number of pages",
+                "order_index": {
                     "type": "integer",
-                    "example": 300
+                    "example": 0
                 },
-                "publisher": {
-                    "description": "Publisher name",
+                "parent_id": {
+                    "type": "integer"
+                },
+                "path": {
                     "type": "string",
-                    "example": "Tech Books Inc"
+                    "example": "/dashboard"
                 },
                 "title": {
-                    "description": "Book title",
                     "type": "string",
-                    "example": "The Go Programming Language"
+                    "example": "Dashboard"
                 },
                 "updated_at": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "year": {
-                    "description": "Publication year",
-                    "type": "integer",
-                    "example": 2015
-                }
-            }
-        },
-        "models.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "ok"
-                }
-            }
-        },
-        "models.MessageResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "Book deleted successfully"
+                    "type": "string"
                 }
             }
         }
     }
-}
-`
-
-type swaggerInfo struct {
-	Version     string
-	Host        string
-	BasePath    string
-	Schemes     []string
-	Title       string
-	Description string
-}
+}`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
-var SwaggerInfo swaggerInfo
+var SwaggerInfo = &swag.Spec{
+	Version:          "1.0",
+	Host:             "localhost:4000",
+	BasePath:         "/",
+	Schemes:          []string{"http", "https"},
+	Title:            "STK Test API - Menu Management",
+	Description:      "REST API for hierarchical menu management with reordering and moving capabilities",
+	InfoInstanceName: "swagger",
+	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
+}
 
 func init() {
-	swag.Register(swag.Name, &swaggerInfo{
-		Version:     "1.0.0",
-		Host:        "localhost:4000",
-		BasePath:    "/",
-		Schemes:     []string{},
-		Title:       "Go Fiber Boilerplate API",
-		Description: "A production-ready REST API boilerplate built with Fiber, GORM, and PostgreSQL",
-	})
+	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
 }
