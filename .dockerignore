@@ -1,0 +1,17 @@
+.git
+.gitignore
+README.md
+.env
+.env.local
+bin/
+dist/
+.vscode/
+.idea/
+*.test
+*.out
+.DS_Store
+docker-compose.yml
+Dockerfile
+Makefile
+coverage.html
+coverage.out

@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: fiber_boilerplate_db_dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fiber_boilerplate
+    ports:
+      - "6543:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fiber_network_dev
+
+  fiber_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: fiber_boilerplate_app_dev
+    volumes:
+      - .:/app                    # Mount entire project (includes source code for live reload)
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: fiber_boilerplate
+      PORT: 4000
+      ENV: development
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fiber_network_dev
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  fiber_network_dev:
+    driver: bridge

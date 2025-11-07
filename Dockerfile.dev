@@ -1,0 +1,28 @@
+# Development Dockerfile with hot reload support using air
+FROM golang:1.25-alpine
+
+WORKDIR /app
+
+# Install air for hot reload and other dev tools
+RUN go install github.com/air-verse/air@latest
+
+# Copy dependency files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code for initial build
+COPY . .
+
+# Create bin directory and do initial build
+RUN mkdir -p bin && go build -o bin/app .
+
+# Source code will be mounted as a volume at runtime, which will override the copied code
+# Air will watch for changes and rebuild from the mounted volume
+
+EXPOSE 4000
+
+# Run with air for hot reload
+# Air watches for changes and automatically rebuilds and restarts the app
+CMD ["air", "-c", ".air.toml"]
