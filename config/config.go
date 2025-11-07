@@ -27,11 +27,6 @@ type Config struct {
 	DBName     string
 	DBSSLMode  string
 
-	// JWT
-	JWTSecret        string
-	JWTExpiry        time.Duration
-	JWTRefreshExpiry time.Duration
-
 	// CORS
 	CORSAllowedOrigins string
 	CORSAllowedMethods string
@@ -43,7 +38,6 @@ type Config struct {
 
 var AppConfig *Config
 
-// LoadConfig loads configuration from environment variables
 func LoadConfig() (*Config, error) {
 	// Load .env file if exists
 	if err := godotenv.Load(); err != nil {
@@ -68,11 +62,6 @@ func LoadConfig() (*Config, error) {
 		DBName:     getEnv("DB_NAME", "fiber_boilerplate"),
 		DBSSLMode:  getEnv("DB_SSL_MODE", "disable"),
 
-		// JWT
-		JWTSecret:        getEnv("JWT_SECRET", "your-secret-key-change-this"),
-		JWTExpiry:        parseDuration(getEnv("JWT_EXPIRY", "15m")),
-		JWTRefreshExpiry: parseDuration(getEnv("JWT_REFRESH_EXPIRY", "7d")),
-
 		// CORS
 		CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000"),
 		CORSAllowedMethods: getEnv("CORS_ALLOWED_METHODS", "GET,POST,PUT,DELETE,OPTIONS"),
@@ -82,7 +71,6 @@ func LoadConfig() (*Config, error) {
 		LogLevel: getEnv("LOG_LEVEL", "info"),
 	}
 
-	// Validate critical config
 	if err := config.Validate(); err != nil {
 		return nil, err
 	}
@@ -91,12 +79,7 @@ func LoadConfig() (*Config, error) {
 	return config, nil
 }
 
-// Validate validates critical configuration
 func (c *Config) Validate() error {
-	if c.JWTSecret == "your-secret-key-change-this" && c.Env == "production" {
-		return fmt.Errorf("JWT_SECRET must be changed in production")
-	}
-
 	if c.DBDriver != "postgres" && c.DBDriver != "sqlite" {
 		return fmt.Errorf("DB_DRIVER must be either 'postgres' or 'sqlite'")
 	}
@@ -104,17 +87,14 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-// IsDevelopment checks if environment is development
 func (c *Config) IsDevelopment() bool {
 	return c.Env == "development"
 }
 
-// IsProduction checks if environment is production
 func (c *Config) IsProduction() bool {
 	return c.Env == "production"
 }
 
-// getEnv gets environment variable with fallback default value
 func getEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
@@ -122,7 +102,6 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
-// parseDuration parses duration string with fallback
 func parseDuration(s string) time.Duration {
 	duration, err := time.ParseDuration(s)
 	if err != nil {

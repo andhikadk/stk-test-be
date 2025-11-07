@@ -40,10 +40,11 @@ type LoginResponse struct {
 
 // CreateBookRequest is the request body for creating a book
 type CreateBookRequest struct {
-	Title  string `json:"title" binding:"required,min=2"`
-	Author string `json:"author" binding:"required,min=2"`
-	Year   int    `json:"year" binding:"required,min=1000,max=9999"`
-	ISBN   string `json:"isbn" binding:"required"`
+	Title       string `json:"title" binding:"required,min=2"`
+	Author      string `json:"author" binding:"required,min=2"`
+	Year        int    `json:"year" binding:"required,min=1000,max=9999"`
+	ISBN        string `json:"isbn" binding:"required"`
+	Description string `json:"description" binding:"omitempty"`
 }
 
 // UpdateBookRequest is the request body for updating a book
