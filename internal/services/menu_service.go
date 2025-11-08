@@ -139,12 +139,39 @@ func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
 	})
 }
 
+func (s *MenuService) buildChildren(parentID uint, menuMap map[uint]*models.Menu, allMenus []models.Menu) []models.Menu {
+	var children []models.Menu
+
+	for i := range allMenus {
+		if allMenus[i].ParentID != nil && *allMenus[i].ParentID == parentID {
+			child := allMenus[i]
+			child.Children = s.buildChildren(child.ID, menuMap, allMenus)
+			children = append(children, child)
+		}
+	}
+
+	return children
+}
+
 func (s *MenuService) GetMenuTree() ([]models.Menu, error) {
-	var menus []models.Menu
-	if err := s.db.Where("parent_id IS NULL").Order("order_index ASC").Preload("Children", func(db *gorm.DB) *gorm.DB {
-		return db.Order("order_index ASC")
-	}).Find(&menus).Error; err != nil {
+	var allMenus []models.Menu
+	if err := s.db.Order("order_index ASC").Find(&allMenus).Error; err != nil {
 		return nil, err
 	}
-	return menus, nil
+
+	menuMap := make(map[uint]*models.Menu)
+	for i := range allMenus {
+		menuMap[allMenus[i].ID] = &allMenus[i]
+	}
+
+	var rootMenus []models.Menu
+	for i := range allMenus {
+		if allMenus[i].ParentID == nil {
+			menu := allMenus[i]
+			menu.Children = s.buildChildren(menu.ID, menuMap, allMenus)
+			rootMenus = append(rootMenus, menu)
+		}
+	}
+
+	return rootMenus, nil
 }
