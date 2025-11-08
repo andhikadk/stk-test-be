@@ -80,12 +80,12 @@ const docTemplate = `{
                 "summary": "Create new menu item",
                 "parameters": [
                     {
-                        "description": "Menu object",
+                        "description": "Menu creation data",
                         "name": "menu",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Menu"
+                            "$ref": "#/definitions/dto.CreateMenuRequest"
                         }
                     }
                 ],
@@ -199,12 +199,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Menu object",
+                        "description": "Menu update data",
                         "name": "menu",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Menu"
+                            "$ref": "#/definitions/dto.UpdateMenuRequest"
                         }
                     }
                 ],
@@ -311,7 +311,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/dto.MoveMenuRequest"
                         }
                     }
                 ],
@@ -370,7 +370,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/dto.ReorderMenuRequest"
                         }
                     }
                 ],
@@ -434,6 +434,86 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreateMenuRequest": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string",
+                    "example": "icon-dashboard"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "order_index": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "parent_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "path": {
+                    "type": "string",
+                    "example": "/dashboard"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Dashboard"
+                }
+            }
+        },
+        "dto.MoveMenuRequest": {
+            "type": "object",
+            "properties": {
+                "parent_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.ReorderMenuRequest": {
+            "type": "object",
+            "properties": {
+                "new_index": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "old_index": {
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "dto.UpdateMenuRequest": {
+            "type": "object",
+            "properties": {
+                "icon": {
+                    "type": "string",
+                    "example": "icon-dashboard"
+                },
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "order_index": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "parent_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "path": {
+                    "type": "string",
+                    "example": "/dashboard"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Dashboard"
+                }
+            }
+        },
         "models.APIResponse": {
             "type": "object",
             "properties": {

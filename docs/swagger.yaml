@@ -1,5 +1,62 @@
 basePath: /
 definitions:
+  dto.CreateMenuRequest:
+    properties:
+      icon:
+        example: icon-dashboard
+        type: string
+      is_active:
+        example: true
+        type: boolean
+      order_index:
+        example: 0
+        type: integer
+      parent_id:
+        example: 1
+        type: integer
+      path:
+        example: /dashboard
+        type: string
+      title:
+        example: Dashboard
+        type: string
+    type: object
+  dto.MoveMenuRequest:
+    properties:
+      parent_id:
+        example: 1
+        type: integer
+    type: object
+  dto.ReorderMenuRequest:
+    properties:
+      new_index:
+        example: 2
+        type: integer
+      old_index:
+        example: 0
+        type: integer
+    type: object
+  dto.UpdateMenuRequest:
+    properties:
+      icon:
+        example: icon-dashboard
+        type: string
+      is_active:
+        example: true
+        type: boolean
+      order_index:
+        example: 0
+        type: integer
+      parent_id:
+        example: 1
+        type: integer
+      path:
+        example: /dashboard
+        type: string
+      title:
+        example: Dashboard
+        type: string
+    type: object
   models.APIResponse:
     properties:
       data: {}
@@ -89,12 +146,12 @@ paths:
       - application/json
       description: Create a new menu item
       parameters:
-      - description: Menu object
+      - description: Menu creation data
         in: body
         name: menu
         required: true
         schema:
-          $ref: '#/definitions/models.Menu'
+          $ref: '#/definitions/dto.CreateMenuRequest'
       produces:
       - application/json
       responses:
@@ -190,12 +247,12 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Menu object
+      - description: Menu update data
         in: body
         name: menu
         required: true
         schema:
-          $ref: '#/definitions/models.Menu'
+          $ref: '#/definitions/dto.UpdateMenuRequest'
       produces:
       - application/json
       responses:
@@ -235,7 +292,7 @@ paths:
         name: request
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/dto.MoveMenuRequest'
       produces:
       - application/json
       responses:
@@ -271,7 +328,7 @@ paths:
         name: request
         required: true
         schema:
-          type: object
+          $ref: '#/definitions/dto.ReorderMenuRequest'
       produces:
       - application/json
       responses:

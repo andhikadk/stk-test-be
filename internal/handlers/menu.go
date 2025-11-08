@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"go-fiber-boilerplate/internal/database"
+	"go-fiber-boilerplate/internal/dto"
 	"go-fiber-boilerplate/internal/models"
 	"go-fiber-boilerplate/internal/services"
 	"strconv"
@@ -80,15 +81,15 @@ func GetMenu(c *fiber.Ctx) error {
 // @Tags         Menus
 // @Accept       json
 // @Produce      json
-// @Param        menu  body      models.Menu  true  "Menu object"
+// @Param        menu  body      dto.CreateMenuRequest  true  "Menu creation data"
 // @Success      201   {object}  models.APIResponse{data=models.Menu}
 // @Failure      400   {object}  models.APIResponse
 // @Failure      500   {object}  models.APIResponse
 // @Router       /api/menus [post]
 func CreateMenu(c *fiber.Ctx) error {
-	var menu models.Menu
+	var req dto.CreateMenuRequest
 
-	if err := c.BodyParser(&menu); err != nil {
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Invalid request body",
@@ -96,12 +97,28 @@ func CreateMenu(c *fiber.Ctx) error {
 		})
 	}
 
-	if menu.Title == "" {
+	if err := req.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
-			Message: "Title is required",
-			Error:   "missing required field: title",
+			Message: "Validation failed",
+			Error:   err.Error(),
 		})
+	}
+
+	menu := models.Menu{
+		ParentID:   req.ParentID,
+		Title:      req.Title,
+		Path:       req.Path,
+		Icon:       req.Icon,
+		OrderIndex: 0,
+		IsActive:   true,
+	}
+
+	if req.OrderIndex != nil {
+		menu.OrderIndex = *req.OrderIndex
+	}
+	if req.IsActive != nil {
+		menu.IsActive = *req.IsActive
 	}
 
 	menuService := services.NewMenuService(database.GetDB())
@@ -126,8 +143,8 @@ func CreateMenu(c *fiber.Ctx) error {
 // @Tags         Menus
 // @Accept       json
 // @Produce      json
-// @Param        id    path      int          true  "Menu ID"
-// @Param        menu  body      models.Menu  true  "Menu object"
+// @Param        id    path      int                    true  "Menu ID"
+// @Param        menu  body      dto.UpdateMenuRequest  true  "Menu update data"
 // @Success      200   {object}  models.APIResponse{data=models.Menu}
 // @Failure      400   {object}  models.APIResponse
 // @Failure      500   {object}  models.APIResponse
@@ -142,13 +159,41 @@ func UpdateMenu(c *fiber.Ctx) error {
 		})
 	}
 
-	var menu models.Menu
-	if err := c.BodyParser(&menu); err != nil {
+	var req dto.UpdateMenuRequest
+	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Invalid request body",
 			Error:   err.Error(),
 		})
+	}
+
+	if err := req.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
+			Status:  fiber.StatusBadRequest,
+			Message: "Validation failed",
+			Error:   err.Error(),
+		})
+	}
+
+	menu := models.Menu{}
+	if req.ParentID != nil {
+		menu.ParentID = req.ParentID
+	}
+	if req.Title != nil {
+		menu.Title = *req.Title
+	}
+	if req.Path != nil {
+		menu.Path = req.Path
+	}
+	if req.Icon != nil {
+		menu.Icon = req.Icon
+	}
+	if req.OrderIndex != nil {
+		menu.OrderIndex = *req.OrderIndex
+	}
+	if req.IsActive != nil {
+		menu.IsActive = *req.IsActive
 	}
 
 	menuService := services.NewMenuService(database.GetDB())
@@ -210,8 +255,8 @@ func DeleteMenu(c *fiber.Ctx) error {
 // @Tags         Menus
 // @Accept       json
 // @Produce      json
-// @Param        id       path      int     true  "Menu ID"
-// @Param        request  body      object  true  "Move request"
+// @Param        id       path      int                  true  "Menu ID"
+// @Param        request  body      dto.MoveMenuRequest  true  "Move request"
 // @Success      200      {object}  models.APIResponse{data=models.Menu}
 // @Failure      400      {object}  models.APIResponse
 // @Router       /api/menus/{id}/move [patch]
@@ -225,14 +270,20 @@ func MoveMenu(c *fiber.Ctx) error {
 		})
 	}
 
-	var req struct {
-		ParentID *uint `json:"parent_id"`
-	}
+	var req dto.MoveMenuRequest
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Invalid request body",
+			Error:   err.Error(),
+		})
+	}
+
+	if err := req.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
+			Status:  fiber.StatusBadRequest,
+			Message: "Validation failed",
 			Error:   err.Error(),
 		})
 	}
@@ -260,8 +311,8 @@ func MoveMenu(c *fiber.Ctx) error {
 // @Tags         Menus
 // @Accept       json
 // @Produce      json
-// @Param        id       path      int     true  "Menu ID"
-// @Param        request  body      object  true  "Reorder request"
+// @Param        id       path      int                     true  "Menu ID"
+// @Param        request  body      dto.ReorderMenuRequest  true  "Reorder request"
 // @Success      200      {object}  models.APIResponse{data=models.Menu}
 // @Failure      400      {object}  models.APIResponse
 // @Failure      500      {object}  models.APIResponse
@@ -276,9 +327,7 @@ func ReorderMenu(c *fiber.Ctx) error {
 		})
 	}
 
-	var req struct {
-		OrderIndex int `json:"order_index"`
-	}
+	var req dto.ReorderMenuRequest
 
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
@@ -288,8 +337,16 @@ func ReorderMenu(c *fiber.Ctx) error {
 		})
 	}
 
+	if err := req.Validate(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
+			Status:  fiber.StatusBadRequest,
+			Message: "Validation failed",
+			Error:   err.Error(),
+		})
+	}
+
 	menuService := services.NewMenuService(database.GetDB())
-	if err := menuService.ReorderMenu(uint(id), req.OrderIndex); err != nil {
+	if err := menuService.ReorderMenu(uint(id), req.NewIndex, req.OldIndex); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to reorder menu",

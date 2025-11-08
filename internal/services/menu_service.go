@@ -62,8 +62,81 @@ func (s *MenuService) MoveMenu(id uint, newParentID *uint) error {
 	return s.db.Model(&models.Menu{}).Where("id = ?", id).Update("parent_id", newParentID).Error
 }
 
-func (s *MenuService) ReorderMenu(id uint, newOrder int) error {
-	return s.db.Model(&models.Menu{}).Where("id = ?", id).Update("order_index", newOrder).Error
+func (s *MenuService) getSiblingCount(parentID *uint) (int64, error) {
+	var count int64
+	query := s.db.Model(&models.Menu{})
+
+	if parentID == nil {
+		query = query.Where("parent_id IS NULL")
+	} else {
+		query = query.Where("parent_id = ?", *parentID)
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
+	var menu models.Menu
+	if err := s.db.First(&menu, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("menu not found")
+		}
+		return err
+	}
+
+	siblingCount, err := s.getSiblingCount(menu.ParentID)
+	if err != nil {
+		return err
+	}
+
+	if newIndex < 0 || int64(newIndex) >= siblingCount {
+		return errors.New("invalid target position")
+	}
+
+	actualOldIndex := menu.OrderIndex
+	if oldIndex != nil {
+		actualOldIndex = *oldIndex
+	}
+
+	if actualOldIndex == newIndex {
+		return nil
+	}
+
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		baseQuery := tx.Model(&models.Menu{}).Where("id != ?", id)
+
+		if menu.ParentID == nil {
+			baseQuery = baseQuery.Where("parent_id IS NULL")
+		} else {
+			baseQuery = baseQuery.Where("parent_id = ?", *menu.ParentID)
+		}
+
+		if actualOldIndex < newIndex {
+			if err := baseQuery.
+				Where("order_index > ?", actualOldIndex).
+				Where("order_index <= ?", newIndex).
+				Update("order_index", gorm.Expr("order_index - 1")).Error; err != nil {
+				return err
+			}
+		} else {
+			if err := baseQuery.
+				Where("order_index >= ?", newIndex).
+				Where("order_index < ?", actualOldIndex).
+				Update("order_index", gorm.Expr("order_index + 1")).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := tx.Model(&models.Menu{}).Where("id = ?", id).Update("order_index", newIndex).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func (s *MenuService) GetMenuTree() ([]models.Menu, error) {
