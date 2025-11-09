@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"go-fiber-boilerplate/internal/database"
-	"go-fiber-boilerplate/internal/dto"
-	"go-fiber-boilerplate/internal/models"
-	"go-fiber-boilerplate/internal/services"
-	"go-fiber-boilerplate/internal/utils"
 	"strconv"
+
+	"github.com/andhikadk/stk-test-be/internal/database"
+	"github.com/andhikadk/stk-test-be/internal/dto"
+	"github.com/andhikadk/stk-test-be/internal/models"
+	"github.com/andhikadk/stk-test-be/internal/services"
+	"github.com/andhikadk/stk-test-be/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )

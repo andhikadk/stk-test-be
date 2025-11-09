@@ -2,7 +2,9 @@ package services
 
 import (
 	"errors"
-	"go-fiber-boilerplate/internal/models"
+
+	"github.com/andhikadk/stk-test-be/internal/models"
+
 	"gorm.io/gorm"
 )
 
@@ -191,7 +193,7 @@ func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
 }
 
 func (s *MenuService) buildChildren(parentID uint, menuMap map[uint]*models.Menu, allMenus []models.Menu) []models.Menu {
-	var children []models.Menu
+	children := make([]models.Menu, 0)
 
 	for i := range allMenus {
 		if allMenus[i].ParentID != nil && *allMenus[i].ParentID == parentID {
@@ -215,7 +217,7 @@ func (s *MenuService) GetMenuTree() ([]models.Menu, error) {
 		menuMap[allMenus[i].ID] = &allMenus[i]
 	}
 
-	var rootMenus []models.Menu
+	rootMenus := make([]models.Menu, 0)
 	for i := range allMenus {
 		if allMenus[i].ParentID == nil {
 			menu := allMenus[i]

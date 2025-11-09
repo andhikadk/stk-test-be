@@ -4,8 +4,8 @@ import (
 	"embed"
 	"log"
 
-	"go-fiber-boilerplate/config"
-	"go-fiber-boilerplate/internal/models"
+	"github.com/andhikadk/stk-test-be/config"
+	"github.com/andhikadk/stk-test-be/internal/models"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

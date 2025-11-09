@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-fiber-boilerplate/config"
-	"go-fiber-boilerplate/pkg/utils"
+	"github.com/andhikadk/stk-test-be/config"
+	"github.com/andhikadk/stk-test-be/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
 )

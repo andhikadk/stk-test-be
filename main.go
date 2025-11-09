@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	_ "go-fiber-boilerplate/docs"
+	_ "github.com/andhikadk/stk-test-be/docs"
 
-	"go-fiber-boilerplate/config"
-	"go-fiber-boilerplate/internal/database"
-	"go-fiber-boilerplate/internal/middleware"
-	"go-fiber-boilerplate/internal/routes"
-	"go-fiber-boilerplate/internal/utils"
+	"github.com/andhikadk/stk-test-be/config"
+	"github.com/andhikadk/stk-test-be/internal/database"
+	"github.com/andhikadk/stk-test-be/internal/middleware"
+	"github.com/andhikadk/stk-test-be/internal/routes"
+	"github.com/andhikadk/stk-test-be/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"

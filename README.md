@@ -21,7 +21,7 @@ A production-ready boilerplate for building REST APIs with **Fiber**, a fast and
 ## 📋 Project Structure
 
 ```
-go-fiber-boilerplate/
+github.com/andhikadk/stk-test-be/
 ├── main.go                        # Application entry point
 ├── embed.go                       # Embedded migrations
 ├── config/
@@ -109,8 +109,8 @@ github.com/joho/godotenv v1.5.1
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/go-fiber-boilerplate.git
-cd go-fiber-boilerplate
+git clone https://github.com/yourusername/github.com/andhikadk/stk-test-be.git
+cd github.com/andhikadk/stk-test-be
 ```
 
 2. **Install dependencies**
@@ -182,7 +182,7 @@ go run main.go
 ```bash
 make build
 ```
-Binary will be created at `./bin/go-fiber-boilerplate`
+Binary will be created at `./bin/github.com/andhikadk/stk-test-be`
 
 ### Development with Hot Reload
 ```bash

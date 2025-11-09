@@ -1,7 +1,7 @@
 .PHONY: help build run test clean migrate seed docker-up docker-down docker-logs docker-reset docker-dev docker-dev-logs docker-dev-down docker-dev-reset install-deps swagger-gen swagger-validate
 
 # Variables
-APP_NAME=go-fiber-boilerplate
+APP_NAME=github.com/andhikadk/stk-test-be
 MAIN_PATH=main.go
 BINARY_NAME=./bin/$(APP_NAME)
 

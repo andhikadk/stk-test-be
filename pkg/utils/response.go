@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"go-fiber-boilerplate/internal/models"
+	"github.com/andhikadk/stk-test-be/internal/models"
 
 	"github.com/gofiber/fiber/v2"
 )

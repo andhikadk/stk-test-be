@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"go-fiber-boilerplate/internal/handlers"
+	"github.com/andhikadk/stk-test-be/internal/handlers"
 
 	"github.com/gofiber/fiber/v2"
 	fiberSwagger "github.com/gofiber/swagger"
