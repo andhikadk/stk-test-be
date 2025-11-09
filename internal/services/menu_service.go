@@ -34,11 +34,58 @@ func (s *MenuService) GetMenuByID(id uint) (*models.Menu, error) {
 }
 
 func (s *MenuService) CreateMenu(menu *models.Menu) error {
-	return s.db.Create(menu).Error
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		siblingCount, err := s.getSiblingCount(menu.ParentID)
+		if err != nil {
+			return err
+		}
+
+		if menu.OrderIndex >= int(siblingCount) {
+			menu.OrderIndex = int(siblingCount)
+		} else {
+			baseQuery := tx.Model(&models.Menu{})
+			if menu.ParentID == nil {
+				baseQuery = baseQuery.Where("parent_id IS NULL")
+			} else {
+				baseQuery = baseQuery.Where("parent_id = ?", *menu.ParentID)
+			}
+
+			if err := baseQuery.
+				Where("order_index >= ?", menu.OrderIndex).
+				Update("order_index", gorm.Expr("order_index + 1")).Error; err != nil {
+				return err
+			}
+		}
+
+		return tx.Create(menu).Error
+	})
 }
 
 func (s *MenuService) UpdateMenu(id uint, menu *models.Menu) error {
-	return s.db.Model(&models.Menu{}).Where("id = ?", id).Updates(menu).Error
+	return s.db.Transaction(func(tx *gorm.DB) error {
+		var currentMenu models.Menu
+		if err := tx.First(&currentMenu, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return errors.New("menu not found")
+			}
+			return err
+		}
+
+		if menu.OrderIndex != 0 && menu.OrderIndex != currentMenu.OrderIndex {
+			if err := s.ReorderMenu(id, menu.OrderIndex, &currentMenu.OrderIndex); err != nil {
+				return err
+			}
+		}
+
+		updates := map[string]interface{}{
+			"title":     menu.Title,
+			"parent_id": menu.ParentID,
+			"path":      menu.Path,
+			"icon":      menu.Icon,
+		}
+
+		return tx.Model(&models.Menu{}).Where("id = ?", id).Updates(updates).Error
+	})
 }
 
 func (s *MenuService) DeleteMenu(id uint) error {
@@ -93,8 +140,12 @@ func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
 		return err
 	}
 
-	if newIndex < 0 || int64(newIndex) >= siblingCount {
-		return errors.New("invalid target position")
+	if newIndex < 0 {
+		return errors.New("invalid target position: index cannot be negative")
+	}
+
+	if int64(newIndex) >= siblingCount {
+		newIndex = int(siblingCount) - 1
 	}
 
 	actualOldIndex := menu.OrderIndex

@@ -5,9 +5,6 @@ definitions:
       icon:
         example: icon-dashboard
         type: string
-      is_active:
-        example: true
-        type: boolean
       order_index:
         example: 0
         type: integer
@@ -41,9 +38,6 @@ definitions:
       icon:
         example: icon-dashboard
         type: string
-      is_active:
-        example: true
-        type: boolean
       order_index:
         example: 0
         type: integer
@@ -84,9 +78,6 @@ definitions:
       id:
         example: 1
         type: integer
-      is_active:
-        example: true
-        type: boolean
       order_index:
         example: 0
         type: integer

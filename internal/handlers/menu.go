@@ -5,6 +5,7 @@ import (
 	"go-fiber-boilerplate/internal/dto"
 	"go-fiber-boilerplate/internal/models"
 	"go-fiber-boilerplate/internal/services"
+	"go-fiber-boilerplate/internal/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,6 +24,7 @@ func GetMenus(c *fiber.Ctx) error {
 	menuService := services.NewMenuService(database.GetDB())
 	menus, err := menuService.GetMenuTree()
 	if err != nil {
+		utils.ErrorLogger.Printf("[GetMenus] Failed to fetch menu tree: %v", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to fetch menus",
@@ -61,6 +63,7 @@ func GetMenu(c *fiber.Ctx) error {
 	menuService := services.NewMenuService(database.GetDB())
 	menu, err := menuService.GetMenuByID(uint(id))
 	if err != nil {
+		utils.ErrorLogger.Printf("[GetMenu] menuID=%d error: %v", id, err)
 		return c.Status(fiber.StatusNotFound).JSON(models.APIResponse{
 			Status:  fiber.StatusNotFound,
 			Message: "Menu not found",
@@ -98,6 +101,7 @@ func CreateMenu(c *fiber.Ctx) error {
 	}
 
 	if err := req.Validate(); err != nil {
+		utils.ErrorLogger.Printf("[CreateMenu] Validation failed: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Validation failed",
@@ -111,18 +115,15 @@ func CreateMenu(c *fiber.Ctx) error {
 		Path:       req.Path,
 		Icon:       req.Icon,
 		OrderIndex: 0,
-		IsActive:   true,
 	}
 
 	if req.OrderIndex != nil {
 		menu.OrderIndex = *req.OrderIndex
 	}
-	if req.IsActive != nil {
-		menu.IsActive = *req.IsActive
-	}
 
 	menuService := services.NewMenuService(database.GetDB())
 	if err := menuService.CreateMenu(&menu); err != nil {
+		utils.ErrorLogger.Printf("[CreateMenu] Failed to create menu '%s': %v", req.Title, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to create menu",
@@ -169,6 +170,7 @@ func UpdateMenu(c *fiber.Ctx) error {
 	}
 
 	if err := req.Validate(); err != nil {
+		utils.ErrorLogger.Printf("[UpdateMenu] menuID=%d validation failed: %v", id, err)
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Validation failed",
@@ -192,12 +194,10 @@ func UpdateMenu(c *fiber.Ctx) error {
 	if req.OrderIndex != nil {
 		menu.OrderIndex = *req.OrderIndex
 	}
-	if req.IsActive != nil {
-		menu.IsActive = *req.IsActive
-	}
 
 	menuService := services.NewMenuService(database.GetDB())
 	if err := menuService.UpdateMenu(uint(id), &menu); err != nil {
+		utils.ErrorLogger.Printf("[UpdateMenu] menuID=%d error: %v", id, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to update menu",
@@ -236,6 +236,7 @@ func DeleteMenu(c *fiber.Ctx) error {
 
 	menuService := services.NewMenuService(database.GetDB())
 	if err := menuService.DeleteMenu(uint(id)); err != nil {
+		utils.ErrorLogger.Printf("[DeleteMenu] menuID=%d error: %v", id, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to delete menu",
@@ -281,6 +282,7 @@ func MoveMenu(c *fiber.Ctx) error {
 	}
 
 	if err := req.Validate(); err != nil {
+		utils.ErrorLogger.Printf("[MoveMenu] menuID=%d validation failed: %v", id, err)
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Validation failed",
@@ -290,6 +292,7 @@ func MoveMenu(c *fiber.Ctx) error {
 
 	menuService := services.NewMenuService(database.GetDB())
 	if err := menuService.MoveMenu(uint(id), req.ParentID); err != nil {
+		utils.ErrorLogger.Printf("[MoveMenu] menuID=%d error: %v", id, err)
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Failed to move menu",
@@ -338,6 +341,7 @@ func ReorderMenu(c *fiber.Ctx) error {
 	}
 
 	if err := req.Validate(); err != nil {
+		utils.ErrorLogger.Printf("[ReorderMenu] menuID=%d validation failed: %v", id, err)
 		return c.Status(fiber.StatusBadRequest).JSON(models.APIResponse{
 			Status:  fiber.StatusBadRequest,
 			Message: "Validation failed",
@@ -347,6 +351,7 @@ func ReorderMenu(c *fiber.Ctx) error {
 
 	menuService := services.NewMenuService(database.GetDB())
 	if err := menuService.ReorderMenu(uint(id), req.NewIndex, req.OldIndex); err != nil {
+		utils.ErrorLogger.Printf("[ReorderMenu] menuID=%d newIndex=%d error: %v", id, req.NewIndex, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(models.APIResponse{
 			Status:  fiber.StatusInternalServerError,
 			Message: "Failed to reorder menu",

@@ -441,10 +441,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "icon-dashboard"
                 },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
-                },
                 "order_index": {
                     "type": "integer",
                     "example": 0
@@ -491,10 +487,6 @@ const docTemplate = `{
                 "icon": {
                     "type": "string",
                     "example": "icon-dashboard"
-                },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
                 },
                 "order_index": {
                     "type": "integer",
@@ -551,10 +543,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer",
                     "example": 1
-                },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
                 },
                 "order_index": {
                     "type": "integer",

@@ -11,6 +11,7 @@ import (
 	"go-fiber-boilerplate/internal/database"
 	"go-fiber-boilerplate/internal/middleware"
 	"go-fiber-boilerplate/internal/routes"
+	"go-fiber-boilerplate/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -45,6 +46,10 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	if err := utils.InitLogger(); err != nil {
+		log.Fatalf("Failed to initialize logger: %v", err)
 	}
 
 	db, err := database.Initialize(cfg)

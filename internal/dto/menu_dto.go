@@ -11,7 +11,6 @@ type CreateMenuRequest struct {
 	Path       *string `json:"path,omitempty" example:"/dashboard"`
 	Icon       *string `json:"icon,omitempty" example:"icon-dashboard"`
 	OrderIndex *int    `json:"order_index,omitempty" example:"0"`
-	IsActive   *bool   `json:"is_active,omitempty" example:"true"`
 }
 
 func (r *CreateMenuRequest) Validate() error {
@@ -44,7 +43,6 @@ type UpdateMenuRequest struct {
 	Path       *string `json:"path,omitempty" example:"/dashboard"`
 	Icon       *string `json:"icon,omitempty" example:"icon-dashboard"`
 	OrderIndex *int    `json:"order_index,omitempty" example:"0"`
-	IsActive   *bool   `json:"is_active,omitempty" example:"true"`
 }
 
 func (r *UpdateMenuRequest) Validate() error {
