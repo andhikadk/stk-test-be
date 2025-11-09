@@ -12,6 +12,7 @@ import (
 	"github.com/andhikadk/stk-test-be/internal/models"
 	"github.com/andhikadk/stk-test-be/internal/routes"
 	"github.com/andhikadk/stk-test-be/internal/testutil"
+	"github.com/google/uuid"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -44,7 +45,7 @@ func intPtr(i int) *int {
 	return &i
 }
 
-func uintPtr(u uint) *uint {
+func uuidPtr(u uuid.UUID) *uuid.UUID {
 	return &u
 }
 
@@ -170,7 +171,7 @@ func TestGetMenu_Success(t *testing.T) {
 
 	menu := testutil.CreateMenuWithPath(db, "Dashboard", "/dashboard", "icon-dashboard", nil)
 
-	url := fmt.Sprintf("/api/menus/%d", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s", menu.ID)
 	req := httptest.NewRequest("GET", url, nil)
 	resp, err := app.Test(req)
 
@@ -195,7 +196,9 @@ func TestGetMenu_NotFound(t *testing.T) {
 	app, _, cleanup := setupTest(t)
 	defer cleanup()
 
-	req := httptest.NewRequest("GET", "/api/menus/999", nil)
+	nonExistentID := uuid.New()
+	url := fmt.Sprintf("/api/menus/%s", nonExistentID)
+	req := httptest.NewRequest("GET", url, nil)
 	resp, err := app.Test(req)
 
 	if err != nil {
@@ -236,7 +239,7 @@ func TestGetMenu_WithChildren(t *testing.T) {
 
 	parent, _ := testutil.CreateMenuHierarchy(db)
 
-	url := fmt.Sprintf("/api/menus/%d", parent.ID)
+	url := fmt.Sprintf("/api/menus/%s", parent.ID)
 	req := httptest.NewRequest("GET", url, nil)
 	resp, err := app.Test(req)
 
@@ -321,7 +324,7 @@ func TestCreateMenu_WithParent(t *testing.T) {
 	testutil.ParseJSONResponse(t, resp.Body, &result)
 
 	menuData := result.Data.(map[string]interface{})
-	testutil.AssertEqual(t, float64(parent.ID), menuData["parent_id"])
+	testutil.AssertEqual(t, parent.ID.String(), menuData["parent_id"])
 }
 
 func TestCreateMenu_WithCustomOrderIndex(t *testing.T) {
@@ -438,7 +441,7 @@ func TestUpdateMenu_Success(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s", menu.ID)
 	req := httptest.NewRequest("PUT", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -474,7 +477,7 @@ func TestUpdateMenu_ChangeParent(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d", child.ID)
+	url := fmt.Sprintf("/api/menus/%s", child.ID)
 	req := httptest.NewRequest("PUT", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -490,7 +493,7 @@ func TestUpdateMenu_ChangeParent(t *testing.T) {
 	testutil.ParseJSONResponse(t, resp.Body, &result)
 
 	menuData := result.Data.(map[string]interface{})
-	testutil.AssertEqual(t, float64(parent2.ID), menuData["parent_id"])
+	testutil.AssertEqual(t, parent2.ID.String(), menuData["parent_id"])
 }
 
 func TestUpdateMenu_MoveToRoot(t *testing.T) {
@@ -505,7 +508,7 @@ func TestUpdateMenu_MoveToRoot(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d", child.ID)
+	url := fmt.Sprintf("/api/menus/%s", child.ID)
 	req := httptest.NewRequest("PUT", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -533,7 +536,9 @@ func TestUpdateMenu_NotFound(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	req := httptest.NewRequest("PUT", "/api/menus/999", bytes.NewReader(body))
+	nonExistentID := uuid.New()
+	url := fmt.Sprintf("/api/menus/%s", nonExistentID)
+	req := httptest.NewRequest("PUT", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := app.Test(req)
@@ -581,7 +586,7 @@ func TestUpdateMenu_ValidationErrors(t *testing.T) {
 			menu := testutil.CreateMenuFixture(db, "Test Menu", nil, 0)
 
 			body, _ := json.Marshal(tt.request)
-			url := fmt.Sprintf("/api/menus/%d", menu.ID)
+			url := fmt.Sprintf("/api/menus/%s", menu.ID)
 			req := httptest.NewRequest("PUT", url, bytes.NewReader(body))
 			req.Header.Set("Content-Type", "application/json")
 
@@ -608,7 +613,7 @@ func TestDeleteMenu_Success(t *testing.T) {
 
 	menu := testutil.CreateMenuFixture(db, "To Delete", nil, 0)
 
-	url := fmt.Sprintf("/api/menus/%d", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s", menu.ID)
 	req := httptest.NewRequest("DELETE", url, nil)
 
 	resp, err := app.Test(req)
@@ -635,7 +640,7 @@ func TestDeleteMenu_WithChildren(t *testing.T) {
 
 	parent, children := testutil.CreateMenuHierarchy(db)
 
-	url := fmt.Sprintf("/api/menus/%d", parent.ID)
+	url := fmt.Sprintf("/api/menus/%s", parent.ID)
 	req := httptest.NewRequest("DELETE", url, nil)
 
 	resp, err := app.Test(req)
@@ -663,7 +668,9 @@ func TestDeleteMenu_NotFound(t *testing.T) {
 	app, _, cleanup := setupTest(t)
 	defer cleanup()
 
-	req := httptest.NewRequest("DELETE", "/api/menus/999", nil)
+	nonExistentID := uuid.New()
+	url := fmt.Sprintf("/api/menus/%s", nonExistentID)
+	req := httptest.NewRequest("DELETE", url, nil)
 
 	resp, err := app.Test(req)
 
@@ -707,7 +714,7 @@ func TestMoveMenu_Success(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/move", child.ID)
+	url := fmt.Sprintf("/api/menus/%s/move", child.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -725,7 +732,7 @@ func TestMoveMenu_Success(t *testing.T) {
 	testutil.AssertEqual(t, "Menu moved successfully", result.Message)
 
 	menuData := result.Data.(map[string]interface{})
-	testutil.AssertEqual(t, float64(parent2.ID), menuData["parent_id"])
+	testutil.AssertEqual(t, parent2.ID.String(), menuData["parent_id"])
 }
 
 func TestMoveMenu_ToRoot(t *testing.T) {
@@ -740,7 +747,7 @@ func TestMoveMenu_ToRoot(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/move", child.ID)
+	url := fmt.Sprintf("/api/menus/%s/move", child.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -765,13 +772,13 @@ func TestMoveMenu_InvalidParent(t *testing.T) {
 
 	menu := testutil.CreateMenuFixture(db, "Menu", nil, 0)
 
-	invalidParentID := uint(999)
+	invalidParentID := uuid.New()
 	reqBody := dto.MoveMenuRequest{
 		ParentID: &invalidParentID,
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/move", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s/move", menu.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -804,7 +811,7 @@ func TestReorderMenu_Success(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/reorder", menu0.ID)
+	url := fmt.Sprintf("/api/menus/%s/reorder", menu0.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -839,7 +846,7 @@ func TestReorderMenu_ToFirst(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/reorder", menu2.ID)
+	url := fmt.Sprintf("/api/menus/%s/reorder", menu2.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -872,7 +879,7 @@ func TestReorderMenu_AutoClamp(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/reorder", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s/reorder", menu.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -902,7 +909,7 @@ func TestReorderMenu_NegativeIndex(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/reorder", menu.ID)
+	url := fmt.Sprintf("/api/menus/%s/reorder", menu.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -938,7 +945,7 @@ func TestReorderMenu_WithinSiblings(t *testing.T) {
 	}
 
 	body, _ := json.Marshal(reqBody)
-	url := fmt.Sprintf("/api/menus/%d/reorder", child0.ID)
+	url := fmt.Sprintf("/api/menus/%s/reorder", child0.ID)
 	req := httptest.NewRequest("PATCH", url, bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 
@@ -955,5 +962,5 @@ func TestReorderMenu_WithinSiblings(t *testing.T) {
 
 	menuData := result.Data.(map[string]interface{})
 	testutil.AssertEqual(t, float64(2), menuData["order_index"])
-	testutil.AssertEqual(t, float64(parent.ID), menuData["parent_id"])
+	testutil.AssertEqual(t, parent.ID.String(), menuData["parent_id"])
 }

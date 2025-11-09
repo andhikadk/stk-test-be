@@ -3,14 +3,16 @@ package dto
 import (
 	"errors"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type CreateMenuRequest struct {
-	ParentID   *uint   `json:"parent_id" example:"1"`
-	Title      string  `json:"title" example:"Dashboard"`
-	Path       *string `json:"path,omitempty" example:"/dashboard"`
-	Icon       *string `json:"icon,omitempty" example:"icon-dashboard"`
-	OrderIndex *int    `json:"order_index,omitempty" example:"0"`
+	ParentID   *uuid.UUID `json:"parent_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000"`
+	Title      string     `json:"title" example:"Dashboard"`
+	Path       *string    `json:"path,omitempty" example:"/dashboard"`
+	Icon       *string    `json:"icon,omitempty" example:"icon-dashboard"`
+	OrderIndex *int       `json:"order_index,omitempty" example:"0"`
 }
 
 func (r *CreateMenuRequest) Validate() error {
@@ -38,11 +40,11 @@ func (r *CreateMenuRequest) Validate() error {
 }
 
 type UpdateMenuRequest struct {
-	ParentID   *uint   `json:"parent_id,omitempty" example:"1"`
-	Title      *string `json:"title,omitempty" example:"Dashboard"`
-	Path       *string `json:"path,omitempty" example:"/dashboard"`
-	Icon       *string `json:"icon,omitempty" example:"icon-dashboard"`
-	OrderIndex *int    `json:"order_index,omitempty" example:"0"`
+	ParentID   *uuid.UUID `json:"parent_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000"`
+	Title      *string    `json:"title,omitempty" example:"Dashboard"`
+	Path       *string    `json:"path,omitempty" example:"/dashboard"`
+	Icon       *string    `json:"icon,omitempty" example:"icon-dashboard"`
+	OrderIndex *int       `json:"order_index,omitempty" example:"0"`
 }
 
 func (r *UpdateMenuRequest) Validate() error {
@@ -72,7 +74,7 @@ func (r *UpdateMenuRequest) Validate() error {
 }
 
 type MoveMenuRequest struct {
-	ParentID *uint `json:"parent_id" example:"1"`
+	ParentID *uuid.UUID `json:"parent_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 func (r *MoveMenuRequest) Validate() error {

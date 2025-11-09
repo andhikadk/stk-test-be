@@ -9,8 +9,8 @@ definitions:
         example: 0
         type: integer
       parent_id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       path:
         example: /dashboard
         type: string
@@ -21,8 +21,8 @@ definitions:
   dto.MoveMenuRequest:
     properties:
       parent_id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
     type: object
   dto.ReorderMenuRequest:
     properties:
@@ -42,8 +42,8 @@ definitions:
         example: 0
         type: integer
       parent_id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       path:
         example: /dashboard
         type: string
@@ -76,13 +76,13 @@ definitions:
         example: icon-dashboard
         type: string
       id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       order_index:
         example: 0
         type: integer
       parent_id:
-        type: integer
+        type: string
       path:
         example: /dashboard
         type: string
@@ -172,11 +172,11 @@ paths:
       - application/json
       description: Delete a menu item and its children
       parameters:
-      - description: Menu ID
+      - description: Menu ID (UUID format)
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -200,11 +200,11 @@ paths:
       - application/json
       description: Get a single menu item by ID
       parameters:
-      - description: Menu ID
+      - description: Menu ID (UUID format)
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -233,11 +233,11 @@ paths:
       - application/json
       description: Update a menu item
       parameters:
-      - description: Menu ID
+      - description: Menu ID (UUID format)
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Menu update data
         in: body
         name: menu
@@ -273,11 +273,11 @@ paths:
       - application/json
       description: Move a menu item to a different parent
       parameters:
-      - description: Menu ID
+      - description: Menu ID (UUID format)
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Move request
         in: body
         name: request
@@ -309,11 +309,11 @@ paths:
       - application/json
       description: Change the order index of a menu item
       parameters:
-      - description: Menu ID
+      - description: Menu ID (UUID format)
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Reorder request
         in: body
         name: request

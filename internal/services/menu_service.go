@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/andhikadk/stk-test-be/internal/models"
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
@@ -24,9 +25,9 @@ func (s *MenuService) GetAllMenus() ([]models.Menu, error) {
 	return menus, nil
 }
 
-func (s *MenuService) GetMenuByID(id uint) (*models.Menu, error) {
+func (s *MenuService) GetMenuByID(id uuid.UUID) (*models.Menu, error) {
 	var menu models.Menu
-	if err := s.db.Preload("Children").First(&menu, id).Error; err != nil {
+	if err := s.db.Preload("Children").Where("id = ?", id).First(&menu).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("menu not found")
 		}
@@ -63,10 +64,10 @@ func (s *MenuService) CreateMenu(menu *models.Menu) error {
 	})
 }
 
-func (s *MenuService) UpdateMenu(id uint, menu *models.Menu) error {
+func (s *MenuService) UpdateMenu(id uuid.UUID, menu *models.Menu) error {
 	return s.db.Transaction(func(tx *gorm.DB) error {
 		var currentMenu models.Menu
-		if err := tx.First(&currentMenu, id).Error; err != nil {
+		if err := tx.Where("id = ?", id).First(&currentMenu).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("menu not found")
 			}
@@ -90,17 +91,17 @@ func (s *MenuService) UpdateMenu(id uint, menu *models.Menu) error {
 	})
 }
 
-func (s *MenuService) DeleteMenu(id uint) error {
+func (s *MenuService) DeleteMenu(id uuid.UUID) error {
 	if err := s.db.Where("parent_id = ?", id).Delete(&models.Menu{}).Error; err != nil {
 		return err
 	}
-	return s.db.Delete(&models.Menu{}, id).Error
+	return s.db.Where("id = ?", id).Delete(&models.Menu{}).Error
 }
 
-func (s *MenuService) MoveMenu(id uint, newParentID *uint) error {
-	if newParentID != nil && *newParentID != 0 {
+func (s *MenuService) MoveMenu(id uuid.UUID, newParentID *uuid.UUID) error {
+	if newParentID != nil && *newParentID != uuid.Nil {
 		var parent models.Menu
-		if err := s.db.First(&parent, *newParentID).Error; err != nil {
+		if err := s.db.Where("id = ?", *newParentID).First(&parent).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("parent menu not found")
 			}
@@ -111,7 +112,7 @@ func (s *MenuService) MoveMenu(id uint, newParentID *uint) error {
 	return s.db.Model(&models.Menu{}).Where("id = ?", id).Update("parent_id", newParentID).Error
 }
 
-func (s *MenuService) getSiblingCount(parentID *uint) (int64, error) {
+func (s *MenuService) getSiblingCount(parentID *uuid.UUID) (int64, error) {
 	var count int64
 	query := s.db.Model(&models.Menu{})
 
@@ -128,9 +129,9 @@ func (s *MenuService) getSiblingCount(parentID *uint) (int64, error) {
 	return count, nil
 }
 
-func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
+func (s *MenuService) ReorderMenu(id uuid.UUID, newIndex int, oldIndex *int) error {
 	var menu models.Menu
-	if err := s.db.First(&menu, id).Error; err != nil {
+	if err := s.db.Where("id = ?", id).First(&menu).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("menu not found")
 		}
@@ -192,7 +193,7 @@ func (s *MenuService) ReorderMenu(id uint, newIndex int, oldIndex *int) error {
 	})
 }
 
-func (s *MenuService) buildChildren(parentID uint, menuMap map[uint]*models.Menu, allMenus []models.Menu) []models.Menu {
+func (s *MenuService) buildChildren(parentID uuid.UUID, menuMap map[uuid.UUID]*models.Menu, allMenus []models.Menu) []models.Menu {
 	children := make([]models.Menu, 0)
 
 	for i := range allMenus {
@@ -212,7 +213,7 @@ func (s *MenuService) GetMenuTree() ([]models.Menu, error) {
 		return nil, err
 	}
 
-	menuMap := make(map[uint]*models.Menu)
+	menuMap := make(map[uuid.UUID]*models.Menu)
 	for i := range allMenus {
 		menuMap[allMenus[i].ID] = &allMenus[i]
 	}

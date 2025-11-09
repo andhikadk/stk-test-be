@@ -2,11 +2,12 @@ package testutil
 
 import (
 	"github.com/andhikadk/stk-test-be/internal/models"
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
 
-func CreateMenuFixture(db *gorm.DB, title string, parentID *uint, orderIndex int) *models.Menu {
+func CreateMenuFixture(db *gorm.DB, title string, parentID *uuid.UUID, orderIndex int) *models.Menu {
 	menu := &models.Menu{
 		Title:      title,
 		ParentID:   parentID,
@@ -16,7 +17,7 @@ func CreateMenuFixture(db *gorm.DB, title string, parentID *uint, orderIndex int
 	return menu
 }
 
-func CreateMenuWithPath(db *gorm.DB, title string, path string, icon string, parentID *uint) *models.Menu {
+func CreateMenuWithPath(db *gorm.DB, title string, path string, icon string, parentID *uuid.UUID) *models.Menu {
 	pathPtr := &path
 	iconPtr := &icon
 	menu := &models.Menu{

@@ -138,8 +138,8 @@ const docTemplate = `{
                 "summary": "Get single menu item",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
+                        "type": "string",
+                        "description": "Menu ID (UUID format)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -192,8 +192,8 @@ const docTemplate = `{
                 "summary": "Update menu item",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
+                        "type": "string",
+                        "description": "Menu ID (UUID format)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -255,8 +255,8 @@ const docTemplate = `{
                 "summary": "Delete menu item",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
+                        "type": "string",
+                        "description": "Menu ID (UUID format)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -299,8 +299,8 @@ const docTemplate = `{
                 "summary": "Move menu item to different parent",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
+                        "type": "string",
+                        "description": "Menu ID (UUID format)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -358,8 +358,8 @@ const docTemplate = `{
                 "summary": "Reorder menu item within same level",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Menu ID",
+                        "type": "string",
+                        "description": "Menu ID (UUID format)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -446,8 +446,8 @@ const docTemplate = `{
                     "example": 0
                 },
                 "parent_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "path": {
                     "type": "string",
@@ -463,8 +463,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "parent_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
             }
         },
@@ -493,8 +493,8 @@ const docTemplate = `{
                     "example": 0
                 },
                 "parent_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "path": {
                     "type": "string",
@@ -541,15 +541,15 @@ const docTemplate = `{
                     "example": "icon-dashboard"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "order_index": {
                     "type": "integer",
                     "example": 0
                 },
                 "parent_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "path": {
                     "type": "string",
