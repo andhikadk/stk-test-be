@@ -25,13 +25,26 @@ services:
       dockerfile: Dockerfile
     container_name: stk_test_api_app
     environment:
+      PORT: 4000
+      ENV: production
+      APP_NAME: "STK Test API"
+      READ_TIMEOUT: 10s
+      WRITE_TIMEOUT: 10s
+      IDLE_TIMEOUT: 60s
+      DB_DRIVER: postgres
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
-      DB_NAME: stk_test_api_app
-      PORT: 4000
-      ENV: production
+      DB_NAME: stk_test
+      DB_SSL_MODE: disable
+      JWT_SECRET: change-this-secret-key-in-production-environment
+      JWT_EXPIRY: 15m
+      JWT_REFRESH_EXPIRY: 168h
+      CORS_ALLOWED_ORIGINS: http://localhost:4000,http://localhost:3000
+      CORS_ALLOWED_METHODS: GET,POST,PUT,PATCH,DELETE,OPTIONS
+      CORS_ALLOWED_HEADERS: Content-Type,Authorization
+      LOG_LEVEL: info
     ports:
       - "4000:4000"
     depends_on:

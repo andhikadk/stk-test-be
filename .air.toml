@@ -7,8 +7,8 @@ tmp_dir = "bin"
 
 [build]
   args_bin = []
-  bin = "./bin/app"
-  cmd = "go build -o ./bin/app ."
+  bin = "./bin/app.exe"
+  cmd = "go build -o ./bin/app.exe ."
   delay = 1000
   exclude_dir = ["assets", "tmp"]
   exclude_file = []

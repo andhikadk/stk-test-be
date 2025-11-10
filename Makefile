@@ -16,12 +16,12 @@ install-deps: ## Install Go dependencies
 
 build: ## Build the application
 	@echo "Building $(APP_NAME)..."
-	@go build -o $(BINARY_NAME) $(MAIN_PATH)
+	@go build -o $(BINARY_NAME) .
 	@echo "Build complete: $(BINARY_NAME)"
 
 run: ## Run the application
 	@echo "Running $(APP_NAME)..."
-	@go run $(MAIN_PATH)
+	@go run .
 
 dev: ## Run in development mode with hot reload (requires air)
 	@echo "Running in development mode..."
@@ -39,22 +39,8 @@ test-coverage: ## Run tests with coverage report
 
 clean: ## Clean build artifacts
 	@echo "Cleaning build artifacts..."
-	@rm -rf bin/
-	@rm -f $(BINARY_NAME)
 	@go clean
 	@echo "Clean complete"
-
-fmt: ## Format code
-	@echo "Formatting code..."
-	@go fmt ./...
-
-lint: ## Run linter (requires golangci-lint)
-	@echo "Running linter..."
-	@golangci-lint run ./... || echo "golangci-lint not installed. Install with: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest"
-
-vet: ## Run go vet
-	@echo "Running go vet..."
-	@go vet ./...
 
 migrate: ## Run database migrations (AutoMigrate for dev, SQL for prod)
 	@echo "Running migrations..."

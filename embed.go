@@ -2,5 +2,5 @@ package main
 
 import "embed"
 
-//go:embed migrations/*
+//go:embed migrations
 var MigrationsFS embed.FS

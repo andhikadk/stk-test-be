@@ -27,6 +27,11 @@ type Config struct {
 	DBName     string
 	DBSSLMode  string
 
+	// JWT
+	JWTSecret        string
+	JWTExpiry        time.Duration
+	JWTRefreshExpiry time.Duration
+
 	// CORS
 	CORSAllowedOrigins string
 	CORSAllowedMethods string
@@ -62,6 +67,11 @@ func LoadConfig() (*Config, error) {
 		DBName:     getEnv("DB_NAME", "stk_test"),
 		DBSSLMode:  getEnv("DB_SSL_MODE", "disable"),
 
+		// JWT
+		JWTSecret:        getEnv("JWT_SECRET", "your-super-secret-jwt-key-change-this-in-production"),
+		JWTExpiry:        parseDuration(getEnv("JWT_EXPIRY", "15m")),
+		JWTRefreshExpiry: parseDuration(getEnv("JWT_REFRESH_EXPIRY", "168h")),
+
 		// CORS
 		CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000"),
 		CORSAllowedMethods: getEnv("CORS_ALLOWED_METHODS", "GET,POST,PUT,PATCH,DELETE,OPTIONS"),
@@ -82,6 +92,16 @@ func LoadConfig() (*Config, error) {
 func (c *Config) Validate() error {
 	if c.DBDriver != "postgres" && c.DBDriver != "sqlite" {
 		return fmt.Errorf("DB_DRIVER must be either 'postgres' or 'sqlite'")
+	}
+
+	// Validate JWT Secret in production
+	if c.IsProduction() {
+		if c.JWTSecret == "your-super-secret-jwt-key-change-this-in-production" {
+			return fmt.Errorf("JWT_SECRET must be changed in production")
+		}
+		if len(c.JWTSecret) < 32 {
+			return fmt.Errorf("JWT_SECRET must be at least 32 characters in production")
+		}
 	}
 
 	return nil
