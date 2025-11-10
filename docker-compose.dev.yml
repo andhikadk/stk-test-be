@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: stk_test_api_db_dev
+    container_name: stk_test_db_dev
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: stk_test_api
+      POSTGRES_DB: stk_test_dev
     ports:
       - "6543:5432"
     volumes:

@@ -201,10 +201,10 @@ make seed
 make migrate-status
 
 # View migration table in psql
-psql -U postgres -d fiber_boilerplate -c "SELECT * FROM migration_versions;"
+psql -U postgres -d stk_test -c "SELECT * FROM migration_versions;"
 
 # View seed table in psql
-psql -U postgres -d fiber_boilerplate -c "SELECT * FROM seed_versions;"
+psql -U postgres -d stk_test -c "SELECT * FROM seed_versions;"
 ```
 
 ## Best Practices
@@ -241,8 +241,8 @@ make migrate-status
 
 ```bash
 # Drop and recreate database
-dropdb fiber_boilerplate
-createdb fiber_boilerplate
+dropdb stk_test
+createdb stk_test
 
 # Re-run migrations
 make migrate
@@ -269,7 +269,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
-DB_NAME=fiber_boilerplate
+DB_NAME=stk_test
 DB_SSL_MODE=disable
 ```
 

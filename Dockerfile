@@ -32,6 +32,6 @@ COPY --from=builder /build/app .
 # Copy .env file (in production, use docker secrets instead)
 COPY .env.example .env
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD ["./app"]

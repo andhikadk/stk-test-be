@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: fiber_boilerplate_db
+    container_name: stk_test_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: fiber_boilerplate
+      POSTGRES_DB: stk_test
     ports:
       - "6543:5432"
     volumes:
@@ -17,19 +17,19 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - fiber_network
+      - stk_test_network
 
-  fiber_app:
+  stk_test_api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fiber_boilerplate_app
+    container_name: stk_test_api_app
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: postgres
-      DB_NAME: fiber_boilerplate
+      DB_NAME: stk_test_api_app
       PORT: 4000
       ENV: production
     ports:
@@ -38,11 +38,11 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - fiber_network
+      - stk_test_network
 
 volumes:
   postgres_data:
 
 networks:
-  fiber_network:
+  stk_test_network:
     driver: bridge
